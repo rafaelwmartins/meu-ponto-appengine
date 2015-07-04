@@ -7,7 +7,7 @@ from firebase_token_generator import create_token
 
 
 FIREBASE_SECRET = '__THE_FIREBASE_SECRET__'
-FIREBASE_URL = 'https://teste-login.firebaseio.com/%s/records%s.json?auth=%s'
+FIREBASE_URL = 'https://__THE_FIREBASE_ID__.firebaseio.com/%s/records%s.json?auth=%s'
 JSON_STR = '{"%s":"%s"}'
 JSON_STR_WITH_LAST = '{"%s":%s,"last":{"value":0}}'
 
