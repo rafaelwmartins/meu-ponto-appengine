@@ -1,0 +1,34 @@
+application: meu-ponto
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /(register)
+  script: register.app
+
+- url: /(.*\.css)
+  static_files: static/\1
+  upload: static/(.*\.css)
+
+- url: /(.*\.html)
+  static_files: static/\1
+  upload: static/(.*\.html)
+
+- url: /(.*\.js)
+  static_files: static/\1
+  upload: static/(.*\.js)
+
+- url: /(.*\.(bmp|gif|ico|jpeg|jpg|png))
+  static_files: static/\1
+  upload: static/(.*\.(bmp|gif|ico|jpeg|jpg|png))
+
+- url: /(.*\.(eot|svg|ttf|woff))
+  static_files: static/\1
+  upload: static/(.*\.(eot|svg|ttf|woff))
+
+- url: /
+  static_files: static/index.html
+  expiration: 1m
+  upload: static/index.html
