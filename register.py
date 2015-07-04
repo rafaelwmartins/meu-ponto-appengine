@@ -3,9 +3,11 @@ import urllib
 import json
 
 from google.appengine.api import urlfetch
+from firebase_token_generator import create_token
 
 
-FIREBASE_URL = 'https://teste-login.firebaseio.com/%s/records%s.json'
+FIREBASE_SECRET = '__THE_FIREBASE_SECRET__'
+FIREBASE_URL = 'https://teste-login.firebaseio.com/%s/records%s.json?auth=%s'
 JSON_STR = '{"%s":"%s"}'
 JSON_STR_WITH_LAST = '{"%s":%s,"last":{"value":0}}'
 
@@ -42,17 +44,21 @@ def get_patch(records, year, month, day, entry_index, value):
         patch['resource'] = ''
     return patch
 
-def get_firebase_url(user, resource):
-    return FIREBASE_URL % (user, resource)
+def get_firebase_credential(token):
+    auth_payload = {'uid': '', 'token': token}
+    return create_token(FIREBASE_SECRET, auth_payload)
 
-def get_records_from_firebase(user):
-    url = get_firebase_url(user, '')
+def get_firebase_url(user, credential, resource):
+    return FIREBASE_URL % (user, resource, credential)
+
+def get_records_from_firebase(user, credential):
+    url = get_firebase_url(user, credential, '')
     result = urlfetch.fetch(url=url, method=urlfetch.GET)
     records = json.loads(result.content)
     return records
 
-def save_on_firebase(user, resource, data):
-    url = get_firebase_url(user, resource)
+def save_on_firebase(user, credential, resource, data):
+    url = get_firebase_url(user, credential, resource)
     result = urlfetch.fetch(url=url,
         payload=data,
         method=urlfetch.PATCH,
@@ -67,6 +73,7 @@ class MainPage(webapp2.RequestHandler):
         self.response.write(result)
 
     def post(self):
+        token = self.request.get('token')
         user = self.request.get('user')
         year = self.request.get('year')
         month = self.request.get('month')
@@ -74,9 +81,10 @@ class MainPage(webapp2.RequestHandler):
         entry_index = self.request.get('entry')
         value = self.request.get('value')
 
-        records = get_records_from_firebase(user)
+        credential = get_firebase_credential(token)
+        records = get_records_from_firebase(user, credential)
         patch = get_patch(records, year, month, day, entry_index, value)
-        result = save_on_firebase(user, patch['resource'], patch['data'])
+        result = save_on_firebase(user, credential, patch['resource'], patch['data'])
         self.print_result(result)
 
 
