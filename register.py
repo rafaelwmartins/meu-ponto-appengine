@@ -63,14 +63,15 @@ def save_on_firebase(user, credential, resource, data):
         payload=data,
         method=urlfetch.PATCH,
         headers={'Content-Type': 'application/x-www-form-urlencoded'})
-    return result.content
+    return result
 
 
 class MainPage(webapp2.RequestHandler):
 
     def print_result(self, result):
         self.response.headers['Content-Type'] = 'application/json'
-        self.response.write(result)
+        self.response.set_status(result.status_code)
+        self.response.write(result.content)
 
     def post(self):
         token = self.request.get('token')
