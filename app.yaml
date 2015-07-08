@@ -8,6 +8,10 @@ handlers:
 - url: /(register)
   script: register.app
 
+- url: /(pebble)
+  static_files: static/pebble/index.html
+  upload: static/pebble/index.html
+
 - url: /(.*\.css)
   static_files: static/\1
   upload: static/(.*\.css)
